@@ -2,44 +2,244 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Happy Valentine's day!</title>
-  <style>
-    html,
-    body {
-      margin: 0;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh; 
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
-    .container {
-      text-align: center;
-      padding: 20px;
-      background-color: rgba(255, 255, 255, 0.8); 
-      border-radius: 3px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: "Outfit", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            overflow: hidden;
+        }
 
+        canvas {
+            display: block;
+        }
 
-    .animated-text {
-      animation: color-change 5s infinite;
-    }
+        h1,
+        h2 {
+            text-align: center;
+            padding-top: 100px;
+        }
 
-    @keyframes color-change {
-    0% { color: blue; }
-    50% { color: green; }
-    100% { color: red; }
-    }
-  </style>
+        #text {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fcf5f5;
+            text-align: center;
+        }
+
+        #buttonContainer {
+            width: 200px;
+            margin: 0 auto;
+        }
+
+        #button1,
+        #button2 {
+            background-color: #49e543;
+            text-align: center;
+            padding: 20px 30px;
+            border: none;
+            color: #fcf5f5;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 15px;
+            width: 170px;
+            margin: 10px;
+            margin-top: 20px;
+        }
+
+        #button1:hover,
+        #button2:hover {
+            background-color: #06ed06;
+            transform: translateY(2px);
+            font-size: 17px;
+        }
+    </style>
 </head>
 
 <body>
-  <img src="https://images.unsplash.com/photo-1484979045040-0ab3854b6acb?q=80&w=1148&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="candies">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+
+        renderer.setClearColor(0xe7abf8);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 5, 5).normalize();
+        scene.add(directionalLight);
+
+        // Loading 3d model (froggo)
+        let model;
+        const loader = new THREE.GLTFLoader();
+        let mixer;
+        loader.load('assets/froggo.glb', function (gltf) {
+            model = gltf.scene;
+            scene.add(model);
+            model.scale.set(0.2, 0.2, 0.2);
+
+            const box = new THREE.Box3().setFromObject(model);
+            const center = box.getCenter(new THREE.Vector3());
+            model.position.sub(center);
+
+            model.position.set(0, -2.2, 0);
+
+            if (gltf.animations.length > 0) {
+                mixer = new THREE.AnimationMixer(model);
+                gltf.animations.forEach((clip) => {
+                    mixer.clipAction(clip).play();
+                });
+            }
+        }, undefined, function (error) {
+            console.error(error);
+        });
+
+        function onMouseMove(event) {
+            const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+
+            if (model) {
+                model.rotation.y = Math.max(-Math.PI / 4, Math.min(Math.PI / 4, mouseX * Math.PI / 4));
+            }
+        }
+
+        window.addEventListener('mousemove', onMouseMove, false);
+
+        camera.position.z = 5;
+
+        // Detecting clicks
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onMouseClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObjects(scene.children, true);
+
+            if (intersects.length > 0) {
+                if (mixer) {
+                    intersects.forEach((intersect) => {
+                        const action = mixer.clipAction(intersect.object);
+                        action.setLoop(THREE.LoopOnce);
+                        action.reset();
+                        action.play();
+                    });
+                }
+            }
+
+            const h1 = document.getElementById('text');
+            if (h1) {
+                h1.remove();
+            }
+
+            const h2 = document.createElement('h2');
+            h2.id = 'text';
+            h2.textContent = 'What are you up to?';
+            h2.style.textAlign = 'center';
+            h2.style.color = '#fcf5f5';
+            h2.style.position = 'absolute';
+            h2.style.top = '50px';
+            h2.style.left = '50%';
+            h2.style.transform = 'translateX(-50%)';
+
+            document.body.appendChild(h2);
+
+            let buttonContainer = document.getElementById('buttonContainer');
+            let button1 = document.getElementById('button1');
+            let button2 = document.getElementById('button2');
+
+            if (!buttonContainer) {
+                buttonContainer = document.createElement('div');
+                buttonContainer.id = 'buttonContainer';
+                buttonContainer.style.position = 'absolute';
+                buttonContainer.style.top = '80px';
+                buttonContainer.style.width = '100%';
+                buttonContainer.style.display = 'flex';
+                buttonContainer.style.justifyContent = 'space-around';
+                buttonContainer.style.margin = '0 auto';
+                document.body.appendChild(buttonContainer);
+            }
+
+            if (!button1) {
+                button1 = document.createElement('button');
+                button1.id = 'button1';
+                button1.style.position = 'absolute';
+                button1.style.top = '130px';
+                button1.style.left = '5%';
+                buttonContainer.appendChild(button1);
+            }
+
+            if (!button2) {
+                button2 = document.createElement('button');
+                button2.id = 'button2';
+                button2.style.position = 'absolute';
+                button2.style.top = '130px';
+                button2.style.right = '5%';
+                buttonContainer.appendChild(button2);
+            }
+
+            button1.textContent = 'CV';
+            button2.textContent = 'Where am I?';
+        }
+
+        window.addEventListener('click', onMouseClick, false);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (mixer) mixer.update(0.01);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('load', () => {
+            const h1 = document.createElement('h1');
+            h1.id = 'text';
+
+            document.body.appendChild(h1);
+
+            const text = "Oh, hi there! Glad you could make it! 🐸";
+            let index = 0;
+            const interval = setInterval(() => {
+                if (index < text.length) {
+                    h1.textContent += text[index];
+                    index++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 100);
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
 </body>
 
 </html>
