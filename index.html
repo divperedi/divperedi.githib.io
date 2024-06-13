@@ -37,7 +37,7 @@
             top: 50px;
             left: 50%;
             transform: translateX(-50%);
-            color: #fcf5f5;
+            color: #ffffff;
             text-align: center;
         }
 
@@ -48,22 +48,25 @@
 
         #button1,
         #button2 {
-            background-color: #49e543;
+            background-color: #F5F3A3;
             text-align: center;
             padding: 20px 30px;
             border: none;
-            color: #fcf5f5;
-            font-size: 16px;
+            color: #4F4A4A;
+            font-size: 18px;
             cursor: pointer;
             border-radius: 15px;
-            width: 155px;
-            margin: 10px;
-            margin-top: 20px;
+            width: 140px;
+            margin-top: 5px;
+            font-family: "Outfit", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 500;
+            font-style: normal;
         }
 
         #button1:hover,
         #button2:hover {
-            background-color: #06ed06;
+            background-color: #f8f54d;
             transform: translateY(2px);
         }
     </style>
@@ -151,22 +154,12 @@
                 }
             }
 
-            const h1 = document.getElementById('text');
-            if (h1) {
-                h1.remove();
-            }
+const h1 = document.getElementById('text');
+if (h1) {
+    h1.textContent = 'Why are you here today?';
+}     
 
-            const h2 = document.createElement('h2');
-            h2.id = 'text';
-            h2.textContent = 'What are you up to?';
-            h2.style.textAlign = 'center';
-            h2.style.color = '#fcf5f5';
-            h2.style.position = 'absolute';
-            h2.style.top = '50px';
-            h2.style.left = '50%';
-            h2.style.transform = 'translateX(-50%)';
-
-            document.body.appendChild(h2);
+            document.body.appendChild(h1);
 
             let buttonContainer = document.getElementById('buttonContainer');
             let button1 = document.getElementById('button1');
@@ -202,8 +195,8 @@
                 buttonContainer.appendChild(button2);
             }
 
-            button1.textContent = 'CV';
-            button2.textContent = 'Where am I?';
+            button1.textContent = 'WANNA SEE A CV';
+            button2.textContent = `I'M JUST BORED`;
         }
 
         window.addEventListener('click', onMouseClick, false);
@@ -219,10 +212,17 @@
         window.addEventListener('load', () => {
             const h1 = document.createElement('h1');
             h1.id = 'text';
+            h1.style.color = '#4F4A4A';
+            h1.style.textAlign = 'center';
+            h1.style.backgroundColor = '#e7abf8';
+            h1.style.position = 'absolute';
+            h1.style.top = '10px';
+            h1.style.left = '50%';
+            h1.style.transform = 'translateX(-50%)';
 
             document.body.appendChild(h1);
 
-            const text = "Oh, hi there! Glad you could make it! 🐸";
+            const text = "Oh, hi there! 🐸";
             let index = 0;
             const interval = setInterval(() => {
                 if (index < text.length) {
