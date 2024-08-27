@@ -94,7 +94,7 @@
         directionalLight.position.set(5, 5, 5).normalize();
         scene.add(directionalLight);
 
-        // Loading 3d model (froggo)
+        // Loading 3D model (froggo)
         let model;
         const loader = new THREE.GLTFLoader();
         let mixer;
@@ -137,7 +137,7 @@
 
         function onMouseClick(event) {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
 
@@ -152,51 +152,56 @@
                         action.play();
                     });
                 }
+
+                const h1 = document.getElementById('text');
+                if (h1) {
+                    h1.textContent = 'Why are you here today?';
+                }
+
+                let buttonContainer = document.getElementById('buttonContainer');
+                if (!buttonContainer) {
+                    buttonContainer = document.createElement('div');
+                    buttonContainer.id = 'buttonContainer';
+                    buttonContainer.style.position = 'absolute';
+                    buttonContainer.style.top = '50px';
+                    buttonContainer.style.width = '100%';
+                    buttonContainer.style.display = 'flex';
+                    buttonContainer.style.justifyContent = 'space-around';
+                    buttonContainer.style.margin = '0 auto';
+                    document.body.appendChild(buttonContainer);
+                }
+
+                let button1 = document.getElementById('button1');
+                if (!button1) {
+                    button1 = document.createElement('button');
+                    button1.id = 'button1';
+                    button1.style.position = 'absolute';
+                    button1.style.top = '130px';
+                    button1.style.left = '5%';
+                    buttonContainer.appendChild(button1);
+                    // Add onclick event for Button 1
+                    button1.addEventListener('click', () => {
+                        window.location.href = 'https://divperedi.github.io/about-me'; // Replace with your CV link
+                    });
+                }
+
+                let button2 = document.getElementById('button2');
+                if (!button2) {
+                    button2 = document.createElement('button');
+                    button2.id = 'button2';
+                    button2.style.position = 'absolute';
+                    button2.style.top = '130px';
+                    button2.style.right = '5%';
+                    buttonContainer.appendChild(button2);
+                    // Add onclick event for Button 2
+                    button2.addEventListener('click', () => {
+                        window.location.href = 'bored.html'; // Replace with your bored page link
+                    });
+                }
+
+                button1.textContent = 'WANNA SEE A CV';
+                button2.textContent = `I'M JUST BORED`;
             }
-
-const h1 = document.getElementById('text');
-if (h1) {
-    h1.textContent = 'Why are you here today?';
-}     
-
-            document.body.appendChild(h1);
-
-            let buttonContainer = document.getElementById('buttonContainer');
-            let button1 = document.getElementById('button1');
-            let button2 = document.getElementById('button2');
-
-            if (!buttonContainer) {
-                buttonContainer = document.createElement('div');
-                buttonContainer.id = 'buttonContainer';
-                buttonContainer.style.position = 'absolute';
-                buttonContainer.style.top = '50px';
-                buttonContainer.style.width = '100%';
-                buttonContainer.style.display = 'flex';
-                buttonContainer.style.justifyContent = 'space-around';
-                buttonContainer.style.margin = '0 auto';
-                document.body.appendChild(buttonContainer);
-            }
-
-            if (!button1) {
-                button1 = document.createElement('button');
-                button1.id = 'button1';
-                button1.style.position = 'absolute';
-                button1.style.top = '130px';
-                button1.style.left = '5%';
-                buttonContainer.appendChild(button1);
-            }
-
-            if (!button2) {
-                button2 = document.createElement('button');
-                button2.id = 'button2';
-                button2.style.position = 'absolute';
-                button2.style.top = '130px';
-                button2.style.right = '5%';
-                buttonContainer.appendChild(button2);
-            }
-
-            button1.textContent = 'WANNA SEE A CV';
-            button2.textContent = `I'M JUST BORED`;
         }
 
         window.addEventListener('click', onMouseClick, false);

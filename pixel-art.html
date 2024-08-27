@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Art Showcase</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-family: "Outfit", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            background-color: #e7abf8;
+            min-height: 100vh; /* Ensures body takes full viewport height */
+            width: 100vw;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            position: relative; /* Ensure positioning context for absolute elements */
+        }
+
+        h1 {
+            color: #4F4A4A;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            margin: 80px 10px 0 10px;
+        }
+
+        .gallery img {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            background-color: rgb(245, 239, 239);
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .sprite-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            max-width: 100%; /* Ensure canvas doesn't overflow its container */
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #F5F3A3;
+            color: #4F4A4A;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+            font-family: "Outfit", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .back-button:hover {
+            background-color: #f8f54d;
+            transform: translateY(2px);
+        }
+
+        .back-button a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="back-button">
+        <a href="bored.html">Back to Bored menu</a>
+    </button>
+    <div class="gallery">
+        <!-- Add your pixel art images here -->
+        <img src="assets/donutsForSM.png" alt="Pixel Art 1" width="400">
+        <img src="assets/cat-tree.png" alt="Pixel Art 2" width="150">
+        <img src="assets/buro.png" alt="Pixel Art 3" width="250">
+        <img src="assets/lamp.png" alt="Pixel Art 4" width="150">
+        <img src="assets/sofa3.png" alt="Pixel Art 5" width="250">
+        <img src="assets/painting.png" alt="Pixel Art 6" width="200">
+        <img src="assets/painting2.png" alt="Pixel Art 7" width="200">
+    </div>
+
+    <!-- Sprite Animation Section -->
+    <section class="gallery">
+        <div class="sprite-container">
+            <canvas id="spriteCanvas1" width="200" height="200"></canvas>
+        </div>
+
+        <div class="sprite-container">
+            <canvas id="spriteCanvas2" width="200" height="200"></canvas>
+        </div>
+
+        <div class="sprite-container">
+            <canvas id="spriteCanvas3" width="200" height="200"></canvas>
+        </div>
+        <div class="sprite-container">
+            <canvas id="spriteCanvas4" width="200" height="200"></canvas>
+        </div>
+    </section>
+
+    <script>
+        function createSpriteAnimation(canvasId, spriteSheetPath, frameWidth, frameHeight, numFrames, frameSpeed) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const spriteSheet = new Image();
+            spriteSheet.src = spriteSheetPath;
+
+            let currentFrame = 0;
+            let lastUpdateTime = 0;
+
+            function drawFrame() {
+                const now = Date.now();
+                if (now - lastUpdateTime > frameSpeed) {
+                    currentFrame = (currentFrame + 1) % numFrames;
+                    lastUpdateTime = now;
+                }
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const sx = currentFrame * frameWidth;
+                ctx.drawImage(spriteSheet, sx, 0, frameWidth, frameHeight, 0, 0, canvas.width, canvas.height);
+
+                requestAnimationFrame(drawFrame);
+            }
+
+            spriteSheet.onload = () => {
+                drawFrame();
+            };
+        }
+
+        // Create animations with adjusted sizes
+        createSpriteAnimation('spriteCanvas1', 'assets/Ruby-loaf-Sheet.png', 64, 64, 3, 500);
+        createSpriteAnimation('spriteCanvas2', 'assets/climbing-ruby-Sheet.png', 48, 64, 2, 350);
+        createSpriteAnimation('spriteCanvas3', 'assets/Ruby-Sheet.png', 96, 96, 4, 200);
+        createSpriteAnimation('spriteCanvas4', 'assets/walking-ruby-Sheet.png', 64, 48, 2, 400);
+    </script>
+</body>
+
+</html>

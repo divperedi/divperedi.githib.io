@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            font-family: "Outfit", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            overflow: hidden;
+            height: calc(var(--vh, 1vh) * 100);
+            position: relative; /* Ensure positioning context for absolute elements */
+            background-color: #e7abf8; /* Match the background color */
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #text {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #F5F3A3;
+            color: #4F4A4A;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+            font-family: "Outfit", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .back-button:hover {
+            background-color: #f8f54d;
+            transform: translateY(2px);
+        }
+        
+        .back-button a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="back-button">
+        <a href="bored.html">Back to Bored Menu</a>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+
+        renderer.setClearColor(0xe7abf8);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 5, 5).normalize();
+        scene.add(directionalLight);
+
+        // Function to load models
+        function loadModel(url, position, scale, rotation, onLoad) {
+            const loader = new THREE.GLTFLoader();
+            loader.load(url, function (gltf) {
+                const model = gltf.scene;
+                scene.add(model);
+                model.scale.set(scale[0], scale[1], scale[2]);
+                model.position.set(position[0], position[1], position[2]);
+                model.rotation.set(rotation[0], rotation[1], rotation[2]);
+
+                if (gltf.animations.length > 0) {
+                    const mixer = new THREE.AnimationMixer(model);
+                    gltf.animations.forEach((clip) => {
+                        mixer.clipAction(clip).play();
+                    });
+                }
+
+                if (onLoad) onLoad(model);
+            }, undefined, function (error) {
+                console.error(error);
+            });
+        }
+
+        // Load room model
+        loadModel('assets/room.glb', [0.6, -0.4, 1], [0.5, 0.5, 0.5], [0, Math.PI, 0]); // Rotate 180 degrees around Y axis
+
+        // Load cereal-box model
+        loadModel('assets/cereal-box.glb', [-1, -0.4, -1], [0.5, 0.5, 0.5], [0, 0, 0]); // No rotation
+
+        function onMouseMove(event) {
+            const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            scene.children.forEach(child => {
+                if (child instanceof THREE.Mesh) {
+                    child.rotation.y = Math.max(-Math.PI / 4, Math.min(Math.PI / 4, mouseX * Math.PI / 4));
+                }
+            });
+        }
+
+        window.addEventListener('mousemove', onMouseMove, false);
+
+        camera.position.z = 5;
+
+        // Detecting clicks
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onMouseClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children, true);
+
+            if (intersects.length > 0) {
+                intersects.forEach((intersect) => {
+                    const object = intersect.object;
+                    if (object.mixer) {
+                        object.mixer.clipAction(object.animation).setLoop(THREE.LoopOnce).play();
+                    }
+                });
+
+                const h1 = document.getElementById('text');
+                if (h1) {
+                    h1.textContent = 'Why are you here today?';
+                }
+            }
+        }
+
+        window.addEventListener('click', onMouseClick, false);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            scene.children.forEach(child => {
+                if (child.mixer) child.mixer.update(0.01);
+            });
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('touchstart', onMouseClick, false);
+
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+        window.addEventListener('resize', () => {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+
+</html>
